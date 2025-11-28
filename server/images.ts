@@ -1,7 +1,6 @@
 "use server";
 import { generateText } from "ai";
 import fs from "node:fs";
-import "dotenv/config";
 
 export async function generateImage(prompt: string) {
   const result = await generateText({

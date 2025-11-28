@@ -1,10 +1,8 @@
-import Image from "next/image";
-
+import ImageGenerationForm from "../components/ui/image-genration-form";
 export default function Home() {
   return (
-    <div className="text-center pt-20">
-      <h1 className="text-2xl">Welcome to my blog!</h1>
-      <p>This is my first nextjs app</p>
-    </div>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4">
+      <ImageGenerationForm />;
+    </main>
   );
 }
