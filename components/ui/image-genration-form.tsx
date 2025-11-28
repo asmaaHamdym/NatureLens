@@ -84,6 +84,8 @@ export default function ImageGenerationForm() {
             src={imageUrl}
             alt="Generated Image"
             className="max-w-full h-auto"
+            width={1000}
+            height={1000}
           />
         </div>
       )}

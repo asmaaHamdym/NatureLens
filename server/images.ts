@@ -16,9 +16,9 @@ export async function generateImage(prompt: string) {
       const timestamp = Date.now();
       fileName = `generated-${timestamp}.png`;
 
-      await fs.promises.writeFile(`puplic/${fileName}`, file.uint8Array);
+      await fs.promises.writeFile(`public/${fileName}`, file.uint8Array);
 
-      console.log(`Generated and saved image: puplic/${fileName}`);
+      console.log(`Generated and saved image: public/${fileName}`);
     }
   }
   return `/${fileName}`;
