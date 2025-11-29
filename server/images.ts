@@ -4,7 +4,7 @@ import fs from "node:fs";
 
 export async function generateImage(prompt: string) {
   const result = await generateText({
-    model: "gemini-2.5-flash-image-preview",
+    model: "gemini-3-pro-preview",
     prompt,
   });
 

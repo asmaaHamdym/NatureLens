@@ -19,6 +19,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { generateImage } from "@/server/images";
 import { Loader2 } from "lucide-react";
+import {
+  Dropzone,
+  DropzoneContent,
+  DropzoneEmptyState,
+} from "@/components/ui/shadcn-io/dropzone";
 
 const formSchema = z.object({
   prompt: z.string(),
@@ -34,6 +39,11 @@ export default function ImageGenerationForm() {
       prompt: "",
     },
   });
+  const [files, setFiles] = useState<File[] | undefined>();
+  const handleDrop = (files: File[]) => {
+    console.log(files);
+    setFiles(files);
+  };
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -50,34 +60,53 @@ export default function ImageGenerationForm() {
 
   return (
     <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="prompt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prompt</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Type yor prompt here...." {...field} />
-                </FormControl>
-                <FormDescription>
-                  Enter a detailed description for the image you want to
-                  generate.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button disabled={isLoading} type="submit">
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              "Submit"
-            )}
-          </Button>
-        </form>
-      </Form>
+      <div className="flex">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <FormField
+              control={form.control}
+              name="prompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type a prompt or upload file</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Type yor prompt here...."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Enter a detailed description for the image you want to
+                    generate.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button disabled={isLoading} type="submit">
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </form>
+        </Form>
+        <Dropzone
+          cladsName="mt-10 w-100%"
+          accept={{ "image/*": [] }}
+          maxFiles={10}
+          maxSize={1024 * 1024 * 10}
+          minSize={1024}
+          onDrop={handleDrop}
+          onError={console.error}
+          src={files}
+        >
+          <DropzoneEmptyState />
+          <DropzoneContent />
+        </Dropzone>
+      </div>
+
       {imageUrl && (
         <div className="mt-8">
           <Image
