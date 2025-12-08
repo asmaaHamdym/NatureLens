@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { generateImage } from "@/server/images";
+import { analyzeImage } from "@/server/images";
 import { Loader2 } from "lucide-react";
 import {
   Dropzone,
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/shadcn-io/dropzone";
 
 const formSchema = z.object({
-  prompt: z.string(),
+  prompt: z.string().optional(),
 });
 
 export default function ImageGenerationForm() {
@@ -39,18 +39,19 @@ export default function ImageGenerationForm() {
       prompt: "",
     },
   });
-  const [files, setFiles] = useState<File[] | undefined>();
-  const handleDrop = (files: File[]) => {
-    console.log(files);
-    setFiles(files);
+  const [files, setFiles] = useState<File[]>([]);
+  const handleDrop = (droppedFiles: File[]) => {
+    console.log(droppedFiles);
+    setFiles(droppedFiles);
   };
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
-      const imageUrl = await generateImage(values.prompt);
-      setImageUrl(imageUrl);
+      const response = await analyzeImage(files);
+      console.log("Analysis response:", response);
+      setImageUrl(response.cute_avatar_img_url);
     } catch (error) {
       console.error("Error generating image:", error);
     } finally {
@@ -60,9 +61,9 @@ export default function ImageGenerationForm() {
 
   return (
     <>
-      <div className="flex">
+      <div className="">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="prompt"
@@ -75,15 +76,25 @@ export default function ImageGenerationForm() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Enter a detailed description for the image you want to
-                    generate.
-                  </FormDescription>
+                  <Dropzone
+                    className=""
+                    accept={{ "image/*": [] }}
+                    maxFiles={10}
+                    maxSize={1024 * 1024 * 10}
+                    minSize={1024}
+                    onDrop={handleDrop}
+                    onError={console.error}
+                    src={files}
+                  >
+                    <DropzoneEmptyState />
+                    <DropzoneContent />
+                  </Dropzone>
+                  <FormDescription></FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button disabled={isLoading} type="submit">
+            <Button disabled={isLoading} type="submit" className="ml-4">
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -92,19 +103,6 @@ export default function ImageGenerationForm() {
             </Button>
           </form>
         </Form>
-        <Dropzone
-          cladsName="mt-10 w-100%"
-          accept={{ "image/*": [] }}
-          maxFiles={10}
-          maxSize={1024 * 1024 * 10}
-          minSize={1024}
-          onDrop={handleDrop}
-          onError={console.error}
-          src={files}
-        >
-          <DropzoneEmptyState />
-          <DropzoneContent />
-        </Dropzone>
       </div>
 
       {imageUrl && (
